@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Juoma, the app</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="http://cdn.userpics.com/static/js/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="http://cdn.userpics.com/static/js/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet" />
+    
+    <style>
+	body {
+		margin-top: 20px;
+	}
+	.center {
+		text-align: center;
+	}
+	.well h1 {
+		margin-top:20px;
+	}
+	.gamelog {
+		font-family: Courier;
+		font-size: 1.1em;
+	}
+	.delete {
+		float: left;
+		margin-top: -4px;
+		margin-right: 5px;
+	}
+	</style>
+  </head>
+  <body>
+	<div class="container">
+ 
+		<div class="well collapse in" id="help">
+		<button class="btn btn-info" data-toggle="collapse" data-target="#help">Toggle game rules</button>
+			<h1>May the juomapeli begin!</h1>
+	      	<p>This is a simple drinking game. Juoma means "a drink" in Finnish.</p>
+	      	<p>Rules are simple</p>
+		    <ul>
+			    <li>List players</li>
+				<li>List available drinks</li>
+				<li>The person who rolls the highest number <strong>has to</strong> drink the drink provided by the game, player can decide portion size</li>
+				<li>If you puke or pass out, you lose</li>
+				<li>If a drink runs out, it must be removed from the drink list</li>
+				<li>Last one who's not thrown up or passed out, IS THE WINNER!</li>
+				<li>Do not die</li>
+				<li>Have fun</li>
+			</ul>
+			<p>Juha Tauriainen <a href="http://twitter.com/juha_tauriainen">@juha_tauriainen</a> <a href="mailto:juha@bin.fi">juha@bin.fi</a></p>
+	    </div>
+	
+		<div class="row">
+		<div class="span12">
+		<div class="well">
+			<button class="btn roll"><i class="icon-refresh"></i> Roll the dice!</button>
+			<div class="gamelog"></div>
+		</div>
+		</div>
+		</div>
+		<div class="row">
+			<div class="span6">
+				<form class="well form-inline players">
+					<label>Add player</label>
+			        <input type="text" class="span3" name="player" placeholder="Player name.." />
+			        
+			        <button type="submit" class="btn"><i class="icon-user"></i> Add</button>
+			      </form>
+			</div>
+			<div class="span6">
+				<form class="well form-inline drinks">
+					<label>Add drink</label>
+			        <input type="text" class="span3" name="drink" placeholder="Drink name.." />
+			        
+			        <button type="submit" class="btn"><i class="icon-glass"></i> Add</button>
+			      </form>
+			</div>
+		</div>
+	
+		<div class="row">
+			<div class="span6">
+				<h2>Players</h2>
+				<div class="player-container"></div>
+			</div>
+			<div class="span6">
+				<h2>Drinks</h2>
+				<div class="drink-container"></div>
+			</div>
+		</div>
+
+    </div> <!-- /container -->
+	<div class="modal hide" id="error">
+	  <div class="modal-header">
+	    <button type="button" class="close" data-dismiss="modal">×</button>
+	    <h3>Multifail! Error!</h3>
+	  </div>
+	  <div class="modal-body">
+	    <p>The form can't be empty!</p>
+	  </div>
+	  <div class="modal-footer">
+	    <a href="#" class="btn" data-dismiss="modal">Close</a>
+	  </div>
+	</div>
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.js" type="text/javascript"></script>
+	<script src="http://cdn.userpics.com/static/js/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+
+	<!-- gamefiles: juoma.js contains the game (works with node.js also) and juoma.app.js contains frontend logic -->
+    <script src="juoma.js"></script>
+    <script src="juoma.app.js"></script>
+	<script type="text/javascript">
+	  var _gaq = _gaq || [];_gaq.push(['_setAccount', 'UA-1306570-37']);_gaq.push(['_trackPageview']);
+	  (function() {var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);})();
+	</script>
+  </body>
+</html>
