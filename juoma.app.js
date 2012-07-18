@@ -1,7 +1,7 @@
 $(document).ready(function(){
 	var $document = $(this);
 	$(".collapse").collapse();
-	var log = $(".gamelog");
+	var gamelog = $(".gamelog");
 	var playerContainer = $(".player-container");
 	var drinkContainer = $(".drink-container");
 	
@@ -17,12 +17,23 @@ $(document).ready(function(){
 			drinkContainer.append('<span><span>' + drink + '</span><button type="button" class="close delete delete-drink">x</button></span><br />');
 		});
 	}
+	function toggleCocktailHour() {
+		config.cocktails = $("input[name='cocktails']").is(":checked");
+		if(config.cocktails === true) {
+			$(".cocktail-rule").show();
+			$(".collapse:not(.in)").collapse('show');
+		} else {
+			$(".cocktail-rule").hide();
+		}
+	}
+
+	toggleCocktailHour();
+	$document.on("change", "input[name='cocktails']", toggleCocktailHour);
 
 	$document.on("click", ".delete", function(event) {
 		event.preventDefault();
 		var $this = $(this);
 		var value = $this.parent("span").find("span").text();
-		console.log(value);
 		var target = ($this.hasClass("delete-player") ? players : drinks);
 		
 		target.splice(target.indexOf(value),1);
@@ -31,8 +42,13 @@ $(document).ready(function(){
 
 	$document.on("click", ".roll", function(event) {
 		event.preventDefault();
-		log.html(juoma().join("<br/>"));
+		var result = juoma();
+		var winner = "<p><strong>" + result[result.length-1] + "</strong></p>";
+		result.splice(result.length-1,1);
+		result.push(winner);
+		gamelog.html(result.join("<br/>"));
 	});
+	
 	$document.on("submit", "form", function(event) {
 		event.preventDefault();
 		var $this = $(this);
@@ -41,6 +57,7 @@ $(document).ready(function(){
 			$('#error').modal();
 			return false;
 		}
+		$this.find("input").val("");
 		($this.hasClass("players") ? players : drinks).push(value);
 		renderIngredient();
 	});
