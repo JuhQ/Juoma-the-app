@@ -13,3 +13,10 @@ Rules are simple:
 
  Juha Tauriainen @juha_tauriainen juha@bin.fi
  Demo: http://userpics.com/juoma/juoma.html
+
+v1.0 Initial release
+v1.1 "the cocktail hour"
+ Contains "cocktail hour" -mode where users are given a list of drinks which has to be mixed together
+v1.2 "the russian roulette"
+ Contains "russian roulette" -mode where winner might not get a chance to drink until next winning roll.
+ Also lots of smaller changes, including url which can be sent to friends, localStorage, localization to couple of languages + minor bug fixes and a bonus of keyboard shortcut for rolling (r) + easter egg

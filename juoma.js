@@ -24,38 +24,67 @@ var players = ["Juha", "Pekka", "Timo", "Liisa", "Maija"];
 // list drinks here
 var drinks = ["Beer", "Koskenkorva", "Whiskey", "Milk"];
 
-// enable "the cocktail hour" -mode
-var config = {cocktails: false};
+// configuration
+var config = {cocktails: false, russianroulette: false, russianRouletteChances: 25, language: "en"};
 
 // don't edit under this line :(
+var i18n = {en:{name:"English"},fi:{name:"Suomi"},se:{name:"Svenska"}};
 var juoma = function() {
 	var playerCount = players.length;
 	var drinkLength = drinks.length-1;
+	
+	// yay translations!
+	i18n.en.classic = "%player rolls %roll for drink %drink";
+	i18n.en.cocktails = "%player rolls %roll, ingredients: %ingredients";
+	i18n.en.russianroulette = "%player, even though you rolled %roll, you don't get to drink this time!";
+
+	i18n.fi.classic = "%player rollasi %roll juomalle %drink";
+	i18n.fi.cocktails = "%player rollasi %roll, drinkin ainekset: %ingredients";
+	i18n.fi.russianroulette = "%player, vaikka rollasit %roll, et pääse juomaan tällä kierroksella!";
+
+	i18n.se.classic = "%player kastar %roll för drycken %drink";
+	i18n.se.cocktails = "%player kastar %roll, ingredienser: %ingredients";
+	i18n.se.russianroulette = "%player, fast du kastade %roll, får du inte dricka denna tur!";
+
+	// chances can't be more than 100%
+	if(config.russianRouletteChances>100) {
+		config.russianRouletteChances = 100;
+	}
+
 	function juoma() {
 		var game = [];
 		var winner = 0;
-		var winnerString = '';
+		var winnerString = '', winnerName = '', winnerDrink = '';
 		while(playerCount--) {
-			var random = rand(0, 100);
+			var roll = rand(0, 100), string;
 			
 			// if "Cocktail hour" enabled and at least two drinks added
 			if(config.cocktails === true && drinkLength >= 2) {
-				var string = cocktails(random);
+				string = cocktails(roll);
 			} else {
-				var string = classic(random);
+				string = classic(roll);
 			}
-				
-			if(random > winner) {
-				winnerString = string;
-				winner = random;
+			
+			if(config.russianroulette === true) {
+				if(rand(0,100) <= config.russianRouletteChances) {
+					string = russianRoulette(roll);
+				}
 			}
+			
+			if(roll > winner) {
+				winner = roll;
+				winnerString = string.str;
+				winnerName = string.player;
+				winnerDrink = string.drink;
+			}
+			
 			// support for addons, for example frontend version
-			game.push(string);
+			game.push(string.str);
 			
 			// print game situation if running from cli
 			if(typeof window == "undefined" && typeof console != "undefined") {
 				// print this to console so that node.js will print something ;)
-				console.log(string);
+				console.log(string.str);
 			}
 		}
 
@@ -64,25 +93,39 @@ var juoma = function() {
 		}
 		game.push("WINNER: " + winnerString);
 		
+		// log winner
+		log(winnerName, winner, winnerDrink);
+		
 		return game;
 	}
 	
 	/**
 	 * Classic roll
- 	 * @param int random
+ 	 * @param int roll
 	 */
-	function classic(random) {
-		return players[playerCount] + " rolls " + random + " for drink " + drinks[rand(0, drinkLength)];
+	function classic(roll) {
+		var str = i18n[config.language].classic, drink = drinks[rand(0, drinkLength)], player = players[playerCount], find = ["%player", "%roll", "%drink"], replace = [player, roll, drink];
+		for(i in find) str = str.replace(find[i],replace[i]);
+		return {str:str,drink:drink,player:player};
+	}
+	
+	/**
+	 * Russian roulette roll
+	 * @param int roll 
+	 */
+	function russianRoulette(roll) {
+		var str = i18n[config.language].russianroulette, player = players[playerCount], find = ["%player", "%roll"], replace = [player, roll];
+		for(i in find) str = str.replace(find[i],replace[i]);
+		return {str:str,player:player,drink:"no drink"};
 	}
 	
 	/**
 	 * Cocktail roll, yay for cocktails!
 	 * The player with the highest roll must drink the cocktail they are given
- 	 * @param int random
+ 	 * @param int roll
 	 */
-	function cocktails(random) {
+	function cocktails(roll) {
 		var randomAmount = rand(2,drinkLength+1);
-		
 		var ingredients = [], recipe = {};
 		
 		// first get drinks, duplicates are are ok, as one drink is one part of the final cocktail
@@ -108,11 +151,29 @@ var juoma = function() {
 			final.push(recipe[i]);
 		}
 		
-		return players[playerCount] + " rolls " + random + ", ingredients: " + final.join(", ");
+		var str = i18n[config.language].cocktails, player = players[playerCount], ingredientStr = final.join(", "), find = ["%player", "%roll", "%ingredients"], replace = [player, roll, ingredientStr];
+		for(i in find) str = str.replace(find[i],replace[i]);
+		return {str:str, player: player, drink: ingredientStr};
 	}
 	
 	function rand(min, max) {
 		return min + Math.round(Math.random() * (max-min));
+	}
+	
+	// log winner if localStorage enabled, will not work on node.js, need to implement database
+	function log(winner, roll, drink) {
+		if(typeof localStorage == "undefined") {
+			return false;
+		}
+		
+		var db = "drinkingGame";
+		if(localStorage.getItem(db) === null) {
+			localStorage.setItem(db, JSON.stringify([]));
+		}
+		
+		var log = JSON.parse(localStorage.getItem(db));
+		log.push({winner:winner, roll:roll, drink:drink, time: new Date()});
+		localStorage.setItem(db, JSON.stringify(log));
 	}
 	
 	return juoma();
